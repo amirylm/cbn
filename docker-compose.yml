@@ -1,0 +1,83 @@
+version: '3.5'
+services:
+  bootnode:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - TARGET_APP=./cmd/bootnode
+    environment:
+      - ADDRS=/ip4/127.0.0.1/tcp/3000,/ip4/0.0.0.0/tcp/3000
+      - PSK=MiPDSPPENQonJnplBwwtdSTQsliKJFXu
+      - PK_PATH=./.pk-bootnode
+      - DATA_PATH=./.data
+    command: "./main"
+    restart: on-failure
+    ports:
+      - "3000:3000"
+    volumes:
+      - data:/usr/src/app/
+    networks:
+      - bdnet
+
+  node: &node
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - TARGET_APP=./cmd/node
+      target: runtime
+    environment:
+      - ADDRS=/ip4/127.0.0.1/tcp/0,/ip4/0.0.0.0/tcp/0
+      - PSK=MiPDSPPENQonJnplBwwtdSTQsliKJFXu
+      - PK_PATH=./.pk-node
+      - DATA_PATH=./.data-node
+      - PEERS=/ip4/127.0.0.1/tcp/3000/p2p/12D3KooWMpU47BMTYv15KuviFHx59sa6gbijLwGa2BcsKS6Ggnpk
+#      - TERMINAL=true
+    restart: on-failure
+    depends_on:
+      - bootnode
+    ports:
+      - "3100:3100"
+    volumes:
+      - data:/usr/src/app/
+    networks:
+      - bdnet
+
+  httpgw:
+    <<: *node
+    build:
+      context: .
+#      dockerfile: Dockerfile
+      args:
+        - TARGET_APP=./cmd/http-gateway
+#      target: runtime
+    environment:
+      - ADDRS=/ip4/127.0.0.1/tcp/0,/ip4/0.0.0.0/tcp/0
+      - PSK=MiPDSPPENQonJnplBwwtdSTQsliKJFXu
+      - PK_PATH=./.pk-gw
+      - DATA_PATH=./.data-gw
+      - PEERS=/ip4/127.0.0.1/tcp/3000/p2p/12D3KooWMpU47BMTYv15KuviFHx59sa6gbijLwGa2BcsKS6Ggnpk
+    ports:
+      - "3010:3010"
+
+#  proxy:
+#    image: nginx:latest
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+#    depends_on:
+#      - bootnode
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - front
+#      - bdnet
+
+volumes:
+  data:
+
+networks:
+#  front:
+#    driver: bridge
+  bdnet:
+    driver: bridge
