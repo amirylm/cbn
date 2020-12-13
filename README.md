@@ -16,11 +16,9 @@ The network consists of several types of peers:
 
 ![](/assets/diagram.png)
 
-Data is referenced by buckets and saved across several storages, regardless of where the bucket is stored.
-
 `Bucket Registry` is responsible for storing the buckets headers / metadata, 
 while `Bucket Source` holds the actual bucket implementation.
-`Data Source` is the actual storage for the data.
+`Data Source` is the actual storage for the data (e.g. files or folders).
 
 Finally, `Domain Registry` should provide decentralized naming. 
 
@@ -35,7 +33,7 @@ it is possible to manage buckets w/o having an own storage peer in the network.
 
 The vision in this project is to provide a decentralized solution 
 that enables an eco-system / marketplace with multiple players and incentives: 
-* Provides / Consumers
+* Providers / Consumers
 * Content hosting / pinning
 * Distribution across data sources
 * Relayers
@@ -72,7 +70,7 @@ which can be used to find supporting peers
 Data Ref defines how to access data, which decouples data from the underlaying data source, 
 and the authorization (e.g. protected data).
 
-Content metadata like type or size is also a good candidate to be included in `DataRef`. 
+Content metadata such as type or size are also good candidates to be included in `DataRef`. 
 
 `ProtectedDataRef` should provide the needed functionality to achieve content authorization, 
 it will act as an individual (per identity) access key to data.
@@ -86,7 +84,7 @@ In order to apply subscriptions, content providers creates a
 [subscription channel](https://github.com/amirylm/subscription-channel)
 contract on Ethereum, which is used to receive tokens from subscribed users.
 
-Each subscription channel have a corresponding channel key that is used to ensure content protection. 
+Each subscription channel has a corresponding channel key that is used to ensure content protection. 
    
 #### 5. Domain Registry
 
